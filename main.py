@@ -16,7 +16,7 @@ class Note:
 
 
 def generate_interval(semitones: int) -> Tuple[Note, Note]:
-    assert 0 <= semitones <= len(NOTES)
+    assert 0 <= semitones < len(NOTES)
     octave = randint(3, 5)
     root = randint(0, len(NOTES) - 1)
 
