@@ -1,0 +1,53 @@
+from typing import Tuple
+
+from playsound import playsound  # type: ignore
+from tones import SINE_WAVE  # type: ignore
+from tones.mixer import Mixer  # type: ignore
+from random import randint
+
+NOTES = ("a", "a#", "b", "c", "c#", "d", "d#", "e", "f", "f#", "g", "g#")
+assert len(NOTES) == 12
+
+
+class Note:
+    def __init__(self, name, octave):
+        self.name = name
+        self.octave = octave
+
+
+def generate_interval(semitones) -> Tuple[Note, Note]:
+    assert 0 <= semitones <= len(NOTES)
+    octave = randint(3, 5)
+    root = randint(0, len(NOTES) - 1)
+
+    extra = root + semitones
+    octave_extra = octave
+    if extra >= len(NOTES):
+        extra -= len(NOTES)
+        octave_extra += 1
+
+    return Note(NOTES[root], octave), Note(NOTES[extra], octave_extra)
+
+
+mixer = Mixer(44100, 0.5)
+mixer.create_track(0, SINE_WAVE, attack=0.01, decay=0.1)
+mixer.create_track(1, SINE_WAVE, attack=0.01, decay=0.1)
+
+DURATION = 4
+INTERVALS = 4
+INTERVAL_SEMITONES = 4
+
+for _ in range(INTERVALS):
+    note_a, note_b = generate_interval(INTERVAL_SEMITONES)
+    mixer.add_note(0, note=note_a.name, octave=note_a.octave, duration=DURATION)
+    mixer.add_note(1, note=note_b.name, octave=note_b.octave, duration=DURATION)
+    mixer.add_silence(0, 0.1)
+    mixer.add_silence(1, 0.1)
+
+WAVE_FILE = "/tmp/tones.wav"
+mixer.write_wav(WAVE_FILE)
+
+playsound(WAVE_FILE)
+
+if __name__ == "__main__":
+    pass
