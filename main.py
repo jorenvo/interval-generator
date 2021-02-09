@@ -31,12 +31,15 @@ def generate_interval(semitones: int) -> Tuple[Note, Note]:
 
 def setup_mixer():
     mixer = Mixer(44100, 0.5)
-    mixer.create_track(0, SINE_WAVE, attack=0.01, decay=0.1)
-    mixer.create_track(1, SINE_WAVE, attack=0.01, decay=0.1)
+    attack_s = 0.01
+    decay_s = 0.1
+    mixer.create_track(0, SINE_WAVE, attack=attack_s, decay=decay_s)
+    mixer.create_track(1, SINE_WAVE, attack=attack_s, decay=decay_s)
     return mixer
 
 
 def generate_intervals(mixer, interval_semitones: int):
+    silence_s = 0.1
     duration_s = 4
     amount = 4
 
@@ -44,8 +47,8 @@ def generate_intervals(mixer, interval_semitones: int):
         note_a, note_b = generate_interval(interval_semitones)
         mixer.add_note(0, note=note_a.name, octave=note_a.octave, duration=duration_s)
         mixer.add_note(1, note=note_b.name, octave=note_b.octave, duration=duration_s)
-        mixer.add_silence(0, 0.1)
-        mixer.add_silence(1, 0.1)
+        mixer.add_silence(0, silence_s)
+        mixer.add_silence(1, silence_s)
 
 
 def write_and_play(mixer):
